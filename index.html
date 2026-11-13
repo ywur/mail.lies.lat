@@ -29,9 +29,9 @@
     }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; transition: background 0.2s; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
     ::-webkit-scrollbar-track { background: transparent; }
 
     /* ── Auth Screen ── */
@@ -137,22 +137,31 @@
     .detail-actions svg:hover { color: #fff; transform: scale(1.1); }
     
     .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; animation: fadeUp 0.4s ease-out; }
-    .detail-meta { padding: 24px 32px; display: flex; gap: 16px; align-items: flex-start; }
+    
+    /* Headers Meta */
+    .detail-meta { padding: 24px 32px; display: flex; gap: 16px; align-items: flex-start; border-bottom: 1px solid #222; margin-bottom: 24px; }
     .detail-meta .avatar-md { width: 48px; height: 48px; font-size: 18px; }
     .meta-info { display: flex; flex-direction: column; gap: 4px; }
     .meta-name { font-size: 16px; font-weight: 600; color: #fff; }
     .meta-email { font-size: 13px; color: #888; }
     .meta-date { font-size: 12px; color: #555; margin-top: 4px; }
     
-    /* The Box */
+    /* The Dark Email Box */
     .email-iframe-container {
-      margin: 0 32px 32px 32px; background: #fff; border-radius: 12px; overflow: hidden;
-      flex: 1; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      margin: 0 32px 32px 32px; background: #0a0a0a; border: 1px solid #222; border-radius: 8px;
+      overflow: hidden; flex: 1; display: flex; flex-direction: column;
     }
     .email-html-render {
-      padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 40px; background: #0a0a0a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100%; overflow-y: auto; line-height: 1.6; word-wrap: break-word;
     }
+    
+    /* Force Email contents to look good in dark mode */
+    .email-html-render * { color: #e0e0e0; }
+    .email-html-render a { color: #4a9eff !important; text-decoration: underline; }
+    .email-html-render img { max-width: 100%; height: auto; border-radius: 4px; }
+    .email-html-render table { max-width: 100%; border-collapse: collapse; }
+    .email-html-render td { padding: 4px; }
     
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
 
@@ -514,7 +523,6 @@
     document.getElementById('detail-empty').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
     
-    // Reset animation
     const detailBody = document.querySelector('.detail-body');
     detailBody.style.animation = 'none';
     detailBody.offsetHeight; /* trigger reflow */
@@ -527,7 +535,6 @@
     document.getElementById('detail-date').textContent = formatDateTime(email.received_at);
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
-    // RENDER CONTENT FIX
     const bodyEl = document.getElementById('detail-body-content');
     if (email.body_html) {
       bodyEl.innerHTML = email.body_html;
