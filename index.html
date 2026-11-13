@@ -139,7 +139,7 @@
     .toast.show { opacity: 1; transform: translateY(0); }
     .hidden { display: none !important; }
 
-    /* Account Dock styling */
+    /* Account Dock */
     .account-dock { position: relative; margin-top: auto; padding: 10px; border-top: 1px solid #202020; background: #050505; flex-shrink: 0; }
     .account-current { display: flex; align-items: center; gap: 9px; padding: 8px; border: 1px solid #242424; border-radius: 10px; background: #0b0b0b; cursor: pointer; min-width: 0; transition: background .15s,border-color .15s; }
     .account-current:hover { background: #141414; border-color: #444; }
@@ -159,11 +159,6 @@
     .account-menu-action { display: block; width: 100%; padding: 9px 8px; margin-top: 4px; text-align: left; border: 0!important; border-top: 1px solid #202020!important; border-radius: 6px; font-size: 10px; cursor: pointer; background: transparent!important; color: #bbb!important; }
     .account-menu-action:hover { background: #171717!important; color: #fff!important; }
     .account-signout { color: #999!important; }
-
-    /* Fix for iframe rendering */
-    .email-iframe-container iframe {
-      width: 100%; height: 100%; border: none; background: #fff;
-    }
   </style>
 </head>
 <body>
@@ -262,9 +257,7 @@
             <div class="meta-date" id="detail-date">Date</div>
           </div>
         </div>
-        <div class="email-iframe-container">
-          <div class="email-html-render" id="detail-body-content"></div>
-        </div>
+        <div class="email-iframe-container" id="detail-body-content"></div>
       </div>
       <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a;">
         <textarea id="reply-text" placeholder="Type your reply..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:8px; min-height:80px; outline:none; font-family:inherit; resize:vertical;"></textarea>
@@ -312,7 +305,7 @@
   let accounts = [];
   let activeAccountId = null;
   const MAX_ACCOUNTS = 5;
-  let allEmails = [];
+  let emails = [];
   let currentFolder = 'inbox';
   let refreshTimer = null;
   let myEmail = '';
@@ -423,7 +416,7 @@
     const a = accounts.find(x => x.userId === userId);
     if (!a || userId === activeAccountId) return;
     if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null;
-    activeAccountId = userId; currentSession = a.session; currentUser = a.session.user; myEmail = a.email; allEmails = []; selectedEmailId = null;
+    activeAccountId = userId; currentSession = a.session; currentUser = a.session.user; myEmail = a.email; emails = []; selectedEmailId = null;
     $('account-menu').style.display = 'none';
     renderAccountDock();
     await initApp();
@@ -500,6 +493,7 @@
     }).join('');
   }
 
+  // THIS IS THE MAGIC THAT RENDERS THE EMBEDS
   async function viewEmail(id, skipMarkRead = false) {
     const email = emails.find(e => e.id === id);
     if (!email) return;
@@ -516,14 +510,16 @@
     $('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
     const bodyEl = $('detail-body-content');
+    bodyEl.innerHTML = '';
     
-    // Render HTML email inside an iframe so styles don't break the app
+    // Render HTML inside an iframe
     if (email.body_html && email.body_html.trim().length > 0 && email.body_html.includes('<')) {
       const frame = document.createElement('iframe');
       frame.style.width = '100%';
       frame.style.height = '100%';
       frame.style.border = '0';
-      frame.style.borderRadius = '12px';
+      frame.setAttribute('sandbox', 'allow-popups allow-popups-to-escape-sandbox');
+      
       const doc = frame.contentWindow.document;
       doc.open();
       doc.write(`
@@ -539,10 +535,9 @@
         </html>
       `);
       doc.close();
-      bodyEl.innerHTML = '';
       bodyEl.appendChild(frame);
     } else if (email.body_text && email.body_text.trim().length > 0) {
-      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:-apple-system, sans-serif; font-size:14px; color:#333; line-height:1.6;">${escapeHtml(email.body_text)}</div>`;
+      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:-apple-system, sans-serif; font-size:14px; color:#333; line-height:1.6; padding:40px;">${escapeHtml(email.body_text)}</div>`;
     } else {
       bodyEl.innerHTML = `<div style="color:#888; text-align:center; padding:40px;">No content available</div>`;
     }
