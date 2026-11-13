@@ -215,11 +215,9 @@
         <div class="account-menu" id="account-menu" style="display:none">
           <div class="account-menu-heading">ACCOUNTS <span id="account-count">1 / 5</span></div>
           <div id="account-list"></div>
-          <button class="account-menu-action" onclick="triggerAvatarUpload()">Change profile picture</button>
           <button class="account-menu-action" id="add-account-btn" onclick="addAccount()">+ Add another account</button>
           <button class="account-menu-action account-signout" onclick="doLogout()">Sign out this account</button>
         </div>
-        <input id="avatar-upload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="uploadAvatar(event)">
       </div>
       <button class="btn-ghost" onclick="openCompose()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -432,37 +430,6 @@
     $('account-menu').style.display = 'none';
     renderAccountDock();
     await initApp();
-  }
-
-  async function triggerAvatarUpload() {
-    $('account-menu').style.display = 'none';
-    $('avatar-upload').click();
-  }
-
-  async function uploadAvatar(event) {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
-    if (file.size > 3 * 1024 * 1024) return showToast('Choose an image under 3 MB');
-    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return showToast('Use PNG, JPG, WEBP or GIF');
-    try {
-      const ext = ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif'})[file.type];
-      const path = `${currentUser.id}/avatar.${ext}`;
-      const upload = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${path}`, {
-        method: 'POST',
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${currentSession.access_token}`, 'x-upsert': 'true', 'Content-Type': file.type },
-        body: file
-      });
-      if (!upload.ok) throw new Error('Upload failed');
-      const url = `${SUPABASE_URL}/storage/v1/object/public/avatars/${path}?v=${Date.now()}`;
-      const { data, error } = await supabaseClient.auth.updateUser({ data: { ...(currentUser.user_metadata || {}), avatar_url: url } });
-      if (error) throw error;
-      currentUser = data.user;
-      const active = accounts.find(a => a.userId === activeAccountId);
-      if (active) { active.avatarUrl = url; active.session.user = currentUser; }
-      storage.setItem('accounts', JSON.stringify({accounts, activeAccountId}));
-      renderAccountDock(); showToast('Profile picture updated');
-    } catch (err) { showToast(`Avatar upload failed: ${err.message}`); }
   }
 
   async function doLogout() {
