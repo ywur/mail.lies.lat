@@ -434,11 +434,6 @@
   const SUPABASE_KEY = 'sb_publishable_PRtMo_ntCby73M7wz0Zdpw_pKfo22Eu';
   const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvcXBtcmVianNmcGVtbWFqYnZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1MzEzNjMsImV4cCI6MjExMDEwNzM2M30.mfwL9ExYGQ5RwGrK0bkgGExs2Y7EhWRZ5El_ALonJRE';
 
-  // ── RESEND SETUP ──
-  const RESEND_API_KEY = 're_3sSPqwrt_LkoN6KLGc2z8RYD3x4ngvD1A';
-  const RESEND_API_URL = 'https://api.resend.com/emails';
-  const RESEND_FROM_EMAIL = 'onboarding@resend.dev'; // Default sandbox sender for testing
-
   let currentUser = null;
   let currentSession = null;
   let emails = [];
@@ -487,7 +482,6 @@
   // ── AUTH ──
   async function doLogin() {
     let username = document.getElementById('login-email').value.trim();
-    // auto-append domain if missing
     if (!username.includes('@')) username = `${username}@lies.lat`;
     else if (!username.endsWith('@lies.lat')) {
       username = username.split('@')[0] + '@lies.lat';
@@ -617,7 +611,6 @@
     container.innerHTML = filtered.map(email => {
       const isUnread = !email.is_read;
       const isActive = selectedEmailId === email.id;
-      // Extract initial for avatar
       const initial = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
       
       return `
@@ -640,7 +633,7 @@
     if (!email) return;
     
     selectedEmailId = id;
-    renderEmailList(); // Updates active highlight
+    renderEmailList();
     
     document.getElementById('detail-empty').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
@@ -652,7 +645,6 @@
     document.getElementById('detail-date').textContent = formatDateTime(email.received_at);
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
-    // Render body (assume it's HTML, or plain text that we can style)
     const bodyEl = document.getElementById('detail-body-content');
     if (email.body_html) {
       bodyEl.innerHTML = email.body_html;
@@ -660,7 +652,6 @@
       bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(email.body_text || '')}</div>`;
     }
     
-    // Mark as read
     if (!skipMarkRead && !email.is_read) {
       email.is_read = true;
       try {
@@ -686,7 +677,6 @@
     document.getElementById('folder-title').textContent = folder.charAt(0).toUpperCase() + folder.slice(1);
     
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    // Find the clicked button and add active class
     const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
       btn.textContent.trim().toLowerCase().includes(folder)
     );
@@ -709,23 +699,18 @@
     document.getElementById('compose-modal').classList.add('hidden');
   }
 
-  // ── UPDATED: Resend integration ──
-  async function sendViaResend(to, subject, text) {
-    const res = await fetch(RESEND_API_URL, {
+  // ── NEW EDGE FUNCTION CALL ──
+  async function sendViaEdge(to, subject, text) {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/resend-send`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`
       },
-      body: JSON.stringify({
-        from: RESEND_FROM_EMAIL,
-        to: to,
-        subject: subject || '(no subject)',
-        text: text
-      })
+      body: JSON.stringify({ from: myEmail, to, subject: subject || '(no subject)', text })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Send failed via Resend');
+    if (!res.ok) throw new Error(data.error || 'Send failed');
     return data;
   }
 
@@ -739,7 +724,7 @@
     status.textContent = 'Sending...';
     
     try {
-      await sendViaResend(to, subject, body);
+      await sendViaEdge(to, subject, body);
       await sbFetch('/rest/v1/emails', {
         method: 'POST',
         body: JSON.stringify({
@@ -767,7 +752,7 @@
     if (!currentEmail) return;
     
     try {
-      await sendViaResend(currentEmail.from_address, `Re: ${currentEmail.subject}`, body);
+      await sendViaEdge(currentEmail.from_address, `Re: ${currentEmail.subject}`, body);
       await sbFetch('/rest/v1/emails', {
         method: 'POST',
         body: JSON.stringify({
