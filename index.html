@@ -124,7 +124,6 @@
     
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
 
-    /* Modals & Toast */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal { background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; animation: scaleIn 0.3s ease-out; }
     .modal-head { padding: 20px 24px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
@@ -393,7 +392,7 @@
     
     const bodyEl = document.getElementById('detail-body-content');
     
-    // RENDER LOGIC: If it's HTML (like Discord), render it. If it's text, style it nicely.
+    // RENDER LOGIC: If it's HTML, render it. If it's text, style it nicely.
     if (email.body_html && email.body_html.includes('<')) {
       bodyEl.innerHTML = email.body_html;
     } else if (email.body_text) {
