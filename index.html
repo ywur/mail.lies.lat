@@ -5,28 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MailBox · lies.lat</title>
   
-  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* ── reset & base ── */
+    /* [Previous CSS stays exactly the same] */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%; overflow: hidden; background: #000000; color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 14px; -webkit-font-smoothing: antialiased;
-    }
+    html, body { height: 100%; overflow: hidden; background: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
     ::-webkit-scrollbar-track { background: transparent; }
-
-    /* ── auth screen ── */
     .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #0a0a0a; }
-    .auth-box {
-      width: 440px; background: #121212; border: 1px solid #222; border-radius: 12px;
-      padding: 48px; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center;
-    }
+    .auth-box { width: 440px; background: #121212; border: 1px solid #222; border-radius: 12px; padding: 48px; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
     .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
     .auth-icon svg { width: 32px; height: 32px; color: #000; }
     .auth-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
@@ -34,71 +24,39 @@
     .auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; font-weight: 600; color: #eee; }
-    .input-group input {
-      width: 100%; background: #000; border: 1px solid #333; color: #fff;
-      padding: 14px 16px; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
-    }
+    .input-group input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 14px 16px; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
     .input-group input:focus { border-color: #666; }
-    .btn-full {
-      width: 100%; background: #333; color: #aaa; border: none; padding: 16px;
-      border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-    }
+    .btn-full { width: 100%; background: #333; color: #aaa; border: none; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .btn-full:hover { background: #444; color: #fff; }
     .auth-footer { margin-top: 32px; font-size: 13px; color: #666; }
-    
-    /* ── app shell ── */
     #app { display: none; height: 100vh; flex-direction: row; background: #000; }
-    
-    /* ── sidebar ── */
     .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin-bottom: 32px; padding: 0 8px; }
     .brand svg { width: 24px; height: 24px; }
-    .nav-btn {
-      display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid transparent;
-      color: #888; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
-      text-align: left; transition: all 0.2s; margin-bottom: 4px;
-    }
+    .nav-btn { display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid transparent; color: #888; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.2s; margin-bottom: 4px; }
     .nav-btn:hover { background: #111; color: #fff; }
     .nav-btn.active { background: #fff; color: #000; font-weight: 600; }
-    
     .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
     .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; }
-    .avatar-sm {
-      width: 32px; height: 32px; border-radius: 50%; background: #333; color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;
-    }
+    .avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: #333; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
     .user-email { font-size: 12px; color: #888; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .btn-ghost {
-      background: transparent; border: 1px solid #333; color: #ccc; padding: 12px 16px; border-radius: 8px;
-      font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; width: 100%;
-    }
+    .btn-ghost { background: transparent; border: 1px solid #333; color: #ccc; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; width: 100%; }
     .btn-ghost:hover { background: #111; border-color: #555; color: #fff; }
     .btn-ghost svg { width: 16px; height: 16px; }
-
-    /* ── email list pane ── */
     .list-pane { width: 360px; border-right: 1px solid #222; display: flex; flex-direction: column; background: #000; flex-shrink: 0; }
     .list-header { padding: 20px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid transparent; }
     .search-wrap { flex: 1; position: relative; display: flex; align-items: center; }
     .search-wrap svg { position: absolute; left: 12px; width: 16px; height: 16px; color: #666; }
-    .search-wrap input {
-      width: 100%; background: #111; border: 1px solid #333; color: #fff;
-      padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none;
-    }
+    .search-wrap input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none; }
     .search-wrap input:focus { border-color: #555; }
     .refresh-btn { background: none; border: none; color: #666; cursor: pointer; padding: 4px; }
     .refresh-btn:hover { color: #fff; }
     .list-title { padding: 12px 24px; font-size: 16px; font-weight: 700; border-bottom: 1px solid #222; }
-    
     .email-list { flex: 1; overflow-y: auto; }
-    .email-item {
-      display: flex; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #111; cursor: pointer; transition: background 0.2s;
-    }
+    .email-item { display: flex; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #111; cursor: pointer; transition: background 0.2s; }
     .email-item:hover { background: #0a0a0a; }
     .email-item.active { background: #1a1a1a; border-left: 3px solid #fff; padding-left: 21px; }
-    .avatar-md {
-      width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0;
-    }
+    .avatar-md { width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
     .email-item.active .avatar-md { background: #fff; color: #000; }
     .email-content { flex: 1; min-width: 0; }
     .email-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
@@ -107,17 +65,12 @@
     .email-subj { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .email-item.unread .email-sender { color: #fff; }
     .email-item.unread .email-subj { color: #fff; font-weight: 500; }
-
-    /* ── detail pane ── */
     .detail-pane { flex: 1; display: flex; flex-direction: column; background: #000; min-width: 0; }
-    .detail-header {
-      padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-    }
+    .detail-header { padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .detail-title { font-size: 18px; font-weight: 700; }
     .detail-actions { display: flex; gap: 12px; color: #666; }
     .detail-actions svg { width: 20px; height: 20px; cursor: pointer; transition: color 0.2s; }
     .detail-actions svg:hover { color: #fff; }
-    
     .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
     .detail-meta { padding: 24px 32px; display: flex; gap: 16px; align-items: flex-start; }
     .detail-meta .avatar-md { width: 48px; height: 48px; font-size: 18px; }
@@ -125,15 +78,9 @@
     .meta-name { font-size: 16px; font-weight: 600; color: #fff; }
     .meta-email { font-size: 13px; color: #888; }
     .meta-date { font-size: 12px; color: #555; margin-top: 4px; }
-    
     .email-iframe-container { margin: 0 32px 32px 32px; background: #fff; border-radius: 12px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
-    .email-html-render {
-      padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100%; overflow-y: auto;
-    }
-    
+    .email-html-render { padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100%; overflow-y: auto; }
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
-
-    /* ── compose modal ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
     .modal { background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
     .modal-head { padding: 20px 24px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
@@ -148,20 +95,13 @@
     .btn-solid:hover { opacity: 0.8; }
     .btn-text { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
     .btn-text:hover { color: #fff; }
-
-    .toast {
-      position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000;
-      padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-      opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 200; pointer-events: none;
-    }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 200; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
-    
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<!-- ── AUTH SCREEN ── -->
 <div id="auth-screen" class="auth-screen">
   <div class="auth-box">
     <div class="auth-icon">
@@ -179,7 +119,6 @@
         <label>Password</label>
         <input type="password" id="login-password">
       </div>
-      
       <button class="btn-full" onclick="doLogin()">Sign in</button>
       <div class="auth-footer">
         Don't have an account? <a href="#" onclick="toggleAuth('register')" style="color:#fff;text-decoration:none;">Sign up</a>
@@ -188,7 +127,7 @@
 
     <div class="auth-form hidden" id="register-form">
       <div class="input-group">
-        <label>Username</label>
+        <label>Username (e.g. me@lies.lat)</label>
         <input type="text" id="reg-username" placeholder="username">
       </div>
       <div class="input-group">
@@ -199,7 +138,6 @@
         <label>Confirm Password</label>
         <input type="password" id="reg-password2">
       </div>
-      
       <button class="btn-full" onclick="doRegister()">Create Account</button>
       <div class="auth-footer">
         Already have an account? <a href="#" onclick="toggleAuth('login')" style="color:#fff;text-decoration:none;">Sign in</a>
@@ -210,33 +148,26 @@
   </div>
 </div>
 
-<!-- ── MAIN APP ── -->
 <div id="app">
-  
-  <!-- Sidebar -->
   <div class="sidebar">
     <div class="brand">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
       MailBox
     </div>
-    
     <button class="nav-btn active" onclick="setFolder('inbox')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9H9l-3-9H2"></path><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
       Inbox
     </button>
-    
     <button class="nav-btn" onclick="setFolder('sent')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       Sent
     </button>
-
     <div class="sidebar-bottom">
       <div class="user-profile">
         <div class="avatar-sm" id="user-avatar">U</div>
         <div class="user-email" id="user-email-display">user@lies.lat</div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="doLogout()"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </div>
-      
       <button class="btn-ghost" onclick="openCompose()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         Compose
@@ -244,7 +175,6 @@
     </div>
   </div>
 
-  <!-- Email List -->
   <div class="list-pane">
     <div class="list-header">
       <div class="search-wrap">
@@ -261,10 +191,8 @@
     </div>
   </div>
 
-  <!-- Detail Pane -->
   <div class="detail-pane">
     <div id="detail-empty" class="empty-detail">Select an email to read</div>
-    
     <div id="detail-view" class="hidden" style="display:flex; flex-direction:column; height:100%;">
       <div class="detail-header">
         <div class="detail-title" id="detail-subject">Subject</div>
@@ -273,7 +201,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
         </div>
       </div>
-      
       <div class="detail-body">
         <div class="detail-meta">
           <div class="avatar-md" id="detail-avatar">D</div>
@@ -284,15 +211,10 @@
             <div class="meta-date" id="detail-date">Date</div>
           </div>
         </div>
-        
         <div class="email-iframe-container">
-          <div class="email-html-render" id="detail-body-content">
-            <!-- Email content injected here -->
-          </div>
+          <div class="email-html-render" id="detail-body-content"></div>
         </div>
       </div>
-
-      <!-- Reply Area (Hidden by default) -->
       <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a;">
         <textarea id="reply-text" placeholder="Type your reply..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:8px; min-height:80px; outline:none; font-family:inherit; resize:vertical;"></textarea>
         <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:12px;">
@@ -304,7 +226,6 @@
   </div>
 </div>
 
-<!-- ── COMPOSE MODAL ── -->
 <div id="compose-modal" class="modal-overlay hidden">
   <div class="modal">
     <div class="modal-head">
@@ -333,11 +254,9 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── SUPABASE SETUP ──
   const SUPABASE_URL = 'https://koqpmrebjsfpemmajbvk.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PRtMo_ntCby73M7wz0Zdpw_pKfo22Eu';
   
-  // Initialize the official Supabase client
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let currentUser = null;
@@ -369,34 +288,22 @@
     }
   }
 
-  // ── AUTH (Using Official Supabase Client) ──
   async function doLogin() {
     let username = document.getElementById('login-email').value.trim();
-    
-    // Auto-append domain if missing
     if (!username.includes('@')) username = `${username}@lies.lat`;
-    else if (!username.endsWith('@lies.lat')) {
-      username = username.split('@')[0] + '@lies.lat';
-    }
+    else if (!username.endsWith('@lies.lat')) username = username.split('@')[0] + '@lies.lat';
     
     const password = document.getElementById('login-password').value;
     const errEl = document.getElementById('auth-err');
-    
     if (!username || !password) { errEl.textContent = 'Please fill all fields'; return; }
     
     try {
-      // This will throw an error if the account doesn't exist or password is wrong
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: username,
-        password: password
-      });
-
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email: username, password });
       if (error) throw error;
       
       currentUser = data.user;
       myEmail = username;
       initApp();
-      
     } catch (err) {
       errEl.textContent = err.message;
     }
@@ -414,19 +321,24 @@
     if (password !== password2) { errEl.textContent = 'Passwords do not match'; return; }
     
     try {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: { username: rawUser }
-        }
+      // 1. Create the User in Auth
+      const { data: authData, error: authError } = await supabaseClient.auth.signUp({ 
+        email: email, 
+        password: password 
       });
-
-      if (error) throw error;
+      if (authError) throw authError;
       
-      if (data.session) {
-        // If email confirmations are off, they log in immediately
-        currentUser = data.user;
+      // 2. Create the Inbox in the database for this user
+      if (authData.user) {
+        const { error: inboxError } = await supabaseClient
+          .from('inboxes')
+          .insert({ user_id: authData.user.id, address: email });
+          
+        if (inboxError) throw new Error("Failed to create inbox: " + inboxError.message);
+      }
+
+      if (authData.session) {
+        currentUser = authData.user;
         myEmail = email;
         initApp();
       } else {
@@ -452,21 +364,15 @@
     document.getElementById('app').style.display = 'flex';
     document.getElementById('user-email-display').textContent = myEmail;
     document.getElementById('user-avatar').textContent = myEmail.charAt(0).toUpperCase();
-    
     loadEmails();
     if (refreshTimer) clearInterval(refreshTimer);
     refreshTimer = setInterval(loadEmails, 15000);
   }
 
-  // ── APP LOGIC ──
   async function loadEmails() {
     if (!currentUser) return;
     try {
-      let query = supabaseClient
-        .from('emails')
-        .select('*')
-        .order('received_at', { ascending: false });
-
+      let query = supabaseClient.from('emails').select('*').order('received_at', { ascending: false });
       if (currentFolder === 'sent') query = query.eq('folder', 'sent');
       else if (currentFolder === 'inbox') query = query.eq('is_deleted', false);
       
@@ -542,11 +448,8 @@
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
     const bodyEl = document.getElementById('detail-body-content');
-    if (email.body_html) {
-      bodyEl.innerHTML = email.body_html;
-    } else {
-      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(email.body_text || '')}</div>`;
-    }
+    if (email.body_html) bodyEl.innerHTML = email.body_html;
+    else bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(email.body_text || '')}</div>`;
     
     if (!skipMarkRead && !email.is_read) {
       email.is_read = true;
@@ -568,18 +471,15 @@
   function setFolder(folder) {
     currentFolder = folder;
     document.getElementById('folder-title').textContent = folder.charAt(0).toUpperCase() + folder.slice(1);
-    
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
     const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
       btn.textContent.trim().toLowerCase().includes(folder)
     );
     if (clickedBtn) clickedBtn.classList.add('active');
-    
     clearDetail();
     loadEmails();
   }
 
-  // ── COMPOSE & REPLY ──
   function openCompose() {
     document.getElementById('compose-modal').classList.remove('hidden');
     document.getElementById('compose-to').value = '';
@@ -592,21 +492,14 @@
     document.getElementById('compose-modal').classList.add('hidden');
   }
 
-  // ── SECURE EDGE FUNCTION CALL ──
   async function sendViaEdge(to, subject, text) {
-    // Get current session token
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) throw new Error("Not authenticated");
-
     const res = await fetch(`${SUPABASE_URL}/functions/v1/resend-send`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
       body: JSON.stringify({ from: myEmail, to, subject: subject || '(no subject)', text })
     });
-    
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Send failed');
     return data;
@@ -623,19 +516,11 @@
     
     try {
       await sendViaEdge(to, subject, body);
-      
-      // Save to Sent folder
       await supabaseClient.from('emails').insert({
-        user_id: currentUser.id, 
-        from_address: myEmail, 
-        to_address: to,
-        subject: subject, 
-        body_text: body, 
-        folder: 'sent', 
-        is_read: true,
+        user_id: currentUser.id, from_address: myEmail, to_address: to,
+        subject: subject, body_text: body, folder: 'sent', is_read: true,
         received_at: new Date().toISOString()
       });
-      
       status.textContent = 'Sent!';
       showToast('Message sent');
       setTimeout(closeCompose, 1000);
@@ -649,25 +534,16 @@
   async function sendReply() {
     const body = document.getElementById('reply-text').value.trim();
     if (!body) return;
-    
     const currentEmail = emails.find(e => e.id === selectedEmailId);
     if (!currentEmail) return;
     
     try {
       await sendViaEdge(currentEmail.from_address, `Re: ${currentEmail.subject}`, body);
-      
-      // Save to Sent folder
       await supabaseClient.from('emails').insert({
-        user_id: currentUser.id, 
-        from_address: myEmail, 
-        to_address: currentEmail.from_address,
-        subject: `Re: ${currentEmail.subject}`, 
-        body_text: body, 
-        folder: 'sent', 
-        is_read: true,
+        user_id: currentUser.id, from_address: myEmail, to_address: currentEmail.from_address,
+        subject: `Re: ${currentEmail.subject}`, body_text: body, folder: 'sent', is_read: true,
         received_at: new Date().toISOString()
       });
-      
       document.getElementById('reply-text').value = '';
       document.getElementById('reply-area').classList.add('hidden');
       showToast('Reply sent');
@@ -677,7 +553,6 @@
     }
   }
 
-  // ── UTILS ──
   function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
@@ -693,7 +568,6 @@
     return new Date(ts).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  // ── SESSION RESTORE ──
   async function restoreSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
