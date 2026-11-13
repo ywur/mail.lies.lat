@@ -8,27 +8,107 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    /* [Previous CSS stays exactly the same] */
+    /* ── reset & base ── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; background: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+    html, body {
+      height: 100%; overflow: hidden; background: #000000; color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px; -webkit-font-smoothing: antialiased;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
     ::-webkit-scrollbar-track { background: transparent; }
-    .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #0a0a0a; }
-    .auth-box { width: 440px; background: #121212; border: 1px solid #222; border-radius: 12px; padding: 48px; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; }
-    .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+
+    /* ── auth screen (Exact Replica) ── */
+    .auth-screen { 
+      height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      background: #000000; 
+    }
+    
+    .auth-box {
+      width: 440px; 
+      background: #0a0a0a; 
+      border: 1px solid #1a1a1a; 
+      border-radius: 12px;
+      padding: 48px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    .auth-icon { 
+      width: 64px; 
+      height: 64px; 
+      background: #ffffff; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-bottom: 24px; 
+      transition: transform 0.3s ease;
+    }
+    .auth-icon:hover { transform: scale(1.05); }
     .auth-icon svg { width: 32px; height: 32px; color: #000; }
-    .auth-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    
+    .auth-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
     .auth-subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
+    
     .auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; font-weight: 600; color: #eee; }
-    .input-group input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 14px 16px; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
-    .input-group input:focus { border-color: #666; }
-    .btn-full { width: 100%; background: #333; color: #aaa; border: none; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    .btn-full:hover { background: #444; color: #fff; }
-    .auth-footer { margin-top: 32px; font-size: 13px; color: #666; }
+    .input-group input {
+      width: 100%; 
+      background: #000; 
+      border: 1px solid #333; 
+      color: #fff;
+      padding: 14px 16px; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      outline: none; 
+      transition: all 0.2s ease;
+    }
+    .input-group input:focus { 
+      border-color: #666; 
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
+    }
+    
+    .btn-full {
+      width: 100%; 
+      background: #1c1c1c; 
+      color: #888; 
+      border: none; 
+      padding: 16px;
+      border-radius: 8px; 
+      font-size: 15px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      margin-top: 4px;
+    }
+    .btn-full:hover { 
+      background: #2a2a2a; 
+      color: #fff; 
+      transform: translateY(-1px);
+    }
+    .btn-full:active { transform: translateY(0); }
+    
+    .auth-footer { margin-top: 32px; font-size: 13px; color: #666; text-align: center; }
+    .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; }
+    .auth-footer a:hover { text-decoration: underline; }
+    
+    /* ── app shell ── */
     #app { display: none; height: 100vh; flex-direction: row; background: #000; }
     .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin-bottom: 32px; padding: 0 8px; }
@@ -107,27 +187,32 @@
     <div class="auth-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
     </div>
+    
     <div class="auth-title" id="auth-title">Welcome Back</div>
     <div class="auth-subtitle" id="auth-subtitle">Sign in to your email account</div>
     
     <div class="auth-form" id="login-form">
       <div class="input-group">
         <label>Email</label>
-        <input type="text" id="login-email" placeholder="you@lies.lat">
+        <input type="text" id="login-email" placeholder="you@example.com">
       </div>
       <div class="input-group">
         <label>Password</label>
         <input type="password" id="login-password">
       </div>
       <button class="btn-full" onclick="doLogin()">Sign in</button>
+      
       <div class="auth-footer">
-        Don't have an account? <a href="#" onclick="toggleAuth('register')" style="color:#fff;text-decoration:none;">Sign up</a>
+        Secure IMAP Email Client
+        <br><br>
+        <span style="opacity: 0.6;">Don't have an account?</span> 
+        <a href="#" onclick="toggleAuth('register')">Sign up</a>
       </div>
     </div>
 
     <div class="auth-form hidden" id="register-form">
       <div class="input-group">
-        <label>Username (e.g. me@lies.lat)</label>
+        <label>Username</label>
         <input type="text" id="reg-username" placeholder="username">
       </div>
       <div class="input-group">
@@ -140,7 +225,10 @@
       </div>
       <button class="btn-full" onclick="doRegister()">Create Account</button>
       <div class="auth-footer">
-        Already have an account? <a href="#" onclick="toggleAuth('login')" style="color:#fff;text-decoration:none;">Sign in</a>
+        Secure IMAP Email Client
+        <br><br>
+        <span style="opacity: 0.6;">Already have an account?</span> 
+        <a href="#" onclick="toggleAuth('login')">Sign in</a>
       </div>
     </div>
     
@@ -148,6 +236,7 @@
   </div>
 </div>
 
+<!-- ── MAIN APP ── -->
 <div id="app">
   <div class="sidebar">
     <div class="brand">
@@ -290,6 +379,7 @@
 
   async function doLogin() {
     let username = document.getElementById('login-email').value.trim();
+    
     if (!username.includes('@')) username = `${username}@lies.lat`;
     else if (!username.endsWith('@lies.lat')) username = username.split('@')[0] + '@lies.lat';
     
@@ -321,21 +411,12 @@
     if (password !== password2) { errEl.textContent = 'Passwords do not match'; return; }
     
     try {
-      // 1. Create the User in Auth
+      // The database trigger we set up now handles creating the inbox automatically!
       const { data: authData, error: authError } = await supabaseClient.auth.signUp({ 
         email: email, 
         password: password 
       });
       if (authError) throw authError;
-      
-      // 2. Create the Inbox in the database for this user
-      if (authData.user) {
-        const { error: inboxError } = await supabaseClient
-          .from('inboxes')
-          .insert({ user_id: authData.user.id, address: email });
-          
-        if (inboxError) throw new Error("Failed to create inbox: " + inboxError.message);
-      }
 
       if (authData.session) {
         currentUser = authData.user;
