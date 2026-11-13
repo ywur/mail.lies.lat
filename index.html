@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MailBox · lies.lat</title>
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* ── reset & base ── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -169,7 +173,7 @@
     <div class="auth-form" id="login-form">
       <div class="input-group">
         <label>Email</label>
-        <input type="text" id="login-email" placeholder="you@lies.lat" value="@lies.lat">
+        <input type="text" id="login-email" placeholder="you@lies.lat">
       </div>
       <div class="input-group">
         <label>Password</label>
@@ -232,11 +236,6 @@
         <div class="user-email" id="user-email-display">user@lies.lat</div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="doLogout()"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </div>
-      
-      <button class="btn-ghost" onclick="alert('Settings page coming soon!')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        Go to Settings
-      </button>
       
       <button class="btn-ghost" onclick="openCompose()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -338,8 +337,10 @@
   const SUPABASE_URL = 'https://koqpmrebjsfpemmajbvk.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PRtMo_ntCby73M7wz0Zdpw_pKfo22Eu';
   
+  // Initialize the official Supabase client
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   let currentUser = null;
-  let currentSession = null;
   let emails = [];
   let currentFolder = 'inbox';
   let refreshTimer = null;
@@ -368,22 +369,11 @@
     }
   }
 
-  async function sbFetch(path, options = {}) {
-    const headers = {
-      'apikey': SUPABASE_KEY,
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    };
-    if (currentSession?.access_token) headers['Authorization'] = `Bearer ${currentSession.access_token}`;
-    
-    const res = await fetch(`${SUPABASE_URL}${path}`, { ...options, headers });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
-  }
-
-  // ── AUTH ──
+  // ── AUTH (Using Official Supabase Client) ──
   async function doLogin() {
     let username = document.getElementById('login-email').value.trim();
+    
+    // Auto-append domain if missing
     if (!username.includes('@')) username = `${username}@lies.lat`;
     else if (!username.endsWith('@lies.lat')) {
       username = username.split('@')[0] + '@lies.lat';
@@ -395,20 +385,18 @@
     if (!username || !password) { errEl.textContent = 'Please fill all fields'; return; }
     
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: username, password })
+      // This will throw an error if the account doesn't exist or password is wrong
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: username,
+        password: password
       });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error_description || 'Invalid login');
+
+      if (error) throw error;
       
-      currentSession = data;
       currentUser = data.user;
       myEmail = username;
-      localStorage.setItem('session', JSON.stringify({ session: data, email: myEmail }));
-      
       initApp();
+      
     } catch (err) {
       errEl.textContent = err.message;
     }
@@ -426,19 +414,20 @@
     if (password !== password2) { errEl.textContent = 'Passwords do not match'; return; }
     
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, data: { username: rawUser } })
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: { username: rawUser }
+        }
       });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error_description || 'Registration failed');
+
+      if (error) throw error;
       
-      if (data.access_token) {
-        currentSession = data;
+      if (data.session) {
+        // If email confirmations are off, they log in immediately
         currentUser = data.user;
         myEmail = email;
-        localStorage.setItem('session', JSON.stringify({ session: data, email }));
         initApp();
       } else {
         errEl.textContent = 'Account created! Please sign in.';
@@ -449,9 +438,9 @@
     }
   }
 
-  function doLogout() {
-    currentUser = null; currentSession = null; selectedEmailId = null;
-    localStorage.removeItem('session');
+  async function doLogout() {
+    await supabaseClient.auth.signOut();
+    currentUser = null; selectedEmailId = null;
     if (refreshTimer) clearInterval(refreshTimer);
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
@@ -471,15 +460,20 @@
 
   // ── APP LOGIC ──
   async function loadEmails() {
-    if (!currentUser && !currentSession) return;
+    if (!currentUser) return;
     try {
-      let query = `/rest/v1/emails?select=*&order=received_at.desc.nullslast`;
-      if (currentUser?.id) query += `&user_id=eq.${currentUser.id}`;
-      if (currentFolder === 'sent') query += '&folder=eq.sent';
-      else if (currentFolder === 'inbox') query += '&is_deleted=eq.false';
+      let query = supabaseClient
+        .from('emails')
+        .select('*')
+        .order('received_at', { ascending: false });
+
+      if (currentFolder === 'sent') query = query.eq('folder', 'sent');
+      else if (currentFolder === 'inbox') query = query.eq('is_deleted', false);
       
-      const data = await sbFetch(query);
-      emails = Array.isArray(data) ? data : [];
+      const { data, error } = await query;
+      if (error) throw error;
+
+      emails = data || [];
       renderEmailList();
       
       if (selectedEmailId) {
@@ -557,10 +551,7 @@
     if (!skipMarkRead && !email.is_read) {
       email.is_read = true;
       try {
-        await sbFetch(`/rest/v1/emails?id=eq.${id}`, {
-          method: 'PATCH',
-          body: JSON.stringify({ is_read: true })
-        });
+        await supabaseClient.from('emails').update({ is_read: true }).eq('id', id);
         renderEmailList();
       } catch(e) {}
     }
@@ -601,15 +592,21 @@
     document.getElementById('compose-modal').classList.add('hidden');
   }
 
+  // ── SECURE EDGE FUNCTION CALL ──
   async function sendViaEdge(to, subject, text) {
+    // Get current session token
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) throw new Error("Not authenticated");
+
     const res = await fetch(`${SUPABASE_URL}/functions/v1/resend-send`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentSession.access_token}`
+        'Authorization': `Bearer ${session.access_token}`
       },
       body: JSON.stringify({ from: myEmail, to, subject: subject || '(no subject)', text })
     });
+    
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Send failed');
     return data;
@@ -626,13 +623,17 @@
     
     try {
       await sendViaEdge(to, subject, body);
-      await sbFetch('/rest/v1/emails', {
-        method: 'POST',
-        body: JSON.stringify({
-          user_id: currentUser.id, from_address: myEmail, to_address: to,
-          subject: subject, body_text: body, folder: 'sent', is_read: true,
-          received_at: new Date().toISOString()
-        })
+      
+      // Save to Sent folder
+      await supabaseClient.from('emails').insert({
+        user_id: currentUser.id, 
+        from_address: myEmail, 
+        to_address: to,
+        subject: subject, 
+        body_text: body, 
+        folder: 'sent', 
+        is_read: true,
+        received_at: new Date().toISOString()
       });
       
       status.textContent = 'Sent!';
@@ -654,13 +655,17 @@
     
     try {
       await sendViaEdge(currentEmail.from_address, `Re: ${currentEmail.subject}`, body);
-      await sbFetch('/rest/v1/emails', {
-        method: 'POST',
-        body: JSON.stringify({
-          user_id: currentUser.id, from_address: myEmail, to_address: currentEmail.from_address,
-          subject: `Re: ${currentEmail.subject}`, body_text: body, folder: 'sent', is_read: true,
-          received_at: new Date().toISOString()
-        })
+      
+      // Save to Sent folder
+      await supabaseClient.from('emails').insert({
+        user_id: currentUser.id, 
+        from_address: myEmail, 
+        to_address: currentEmail.from_address,
+        subject: `Re: ${currentEmail.subject}`, 
+        body_text: body, 
+        folder: 'sent', 
+        is_read: true,
+        received_at: new Date().toISOString()
       });
       
       document.getElementById('reply-text').value = '';
@@ -690,20 +695,12 @@
 
   // ── SESSION RESTORE ──
   async function restoreSession() {
-    const saved = localStorage.getItem('session');
-    if (!saved) return;
-    try {
-      const { session, email } = JSON.parse(saved);
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${session.access_token}` }
-      });
-      if (res.ok) {
-        currentSession = session;
-        currentUser = await res.json();
-        myEmail = email;
-        initApp();
-      } else localStorage.removeItem('session');
-    } catch (e) { localStorage.removeItem('session'); }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      myEmail = session.user.email;
+      initApp();
+    }
   }
 
   restoreSession();
