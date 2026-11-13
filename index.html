@@ -233,7 +233,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="doLogout()"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
       </div>
       
-      <!-- Added Settings Button -->
       <button class="btn-ghost" onclick="alert('Settings page coming soon!')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         Go to Settings
@@ -338,10 +337,7 @@
   // ── SUPABASE SETUP ──
   const SUPABASE_URL = 'https://koqpmrebjsfpemmajbvk.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PRtMo_ntCby73M7wz0Zdpw_pKfo22Eu';
-  // WARNING: Keep your service role key private if this goes to production. 
-  // For this demo, we use it to bypass RLS for simple queries.
-  const SERVICE_ROLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvcXBtcmVianNmcGVtbWFqYnZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1MzEzNjMsImV4cCI6MjExMDEwNzM2M30.mfwL9ExYGQ5RwGrK0bkgGExs2Y7EhWRZ5El_ALonJRE';
-
+  
   let currentUser = null;
   let currentSession = null;
   let emails = [];
@@ -372,14 +368,13 @@
     }
   }
 
-  async function sbFetch(path, options = {}, useServiceRole = false) {
+  async function sbFetch(path, options = {}) {
     const headers = {
       'apikey': SUPABASE_KEY,
       'Content-Type': 'application/json',
       ...(options.headers || {})
     };
-    if (useServiceRole) headers['Authorization'] = `Bearer ${SERVICE_ROLE_KEY}`;
-    else if (currentSession?.access_token) headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+    if (currentSession?.access_token) headers['Authorization'] = `Bearer ${currentSession.access_token}`;
     
     const res = await fetch(`${SUPABASE_URL}${path}`, { ...options, headers });
     if (!res.ok) throw new Error(await res.text());
@@ -483,7 +478,7 @@
       if (currentFolder === 'sent') query += '&folder=eq.sent';
       else if (currentFolder === 'inbox') query += '&is_deleted=eq.false';
       
-      const data = await sbFetch(query, {}, true);
+      const data = await sbFetch(query);
       emails = Array.isArray(data) ? data : [];
       renderEmailList();
       
@@ -565,7 +560,7 @@
         await sbFetch(`/rest/v1/emails?id=eq.${id}`, {
           method: 'PATCH',
           body: JSON.stringify({ is_read: true })
-        }, true);
+        });
         renderEmailList();
       } catch(e) {}
     }
@@ -606,13 +601,12 @@
     document.getElementById('compose-modal').classList.add('hidden');
   }
 
-  // Send via your new Supabase Edge Function
   async function sendViaEdge(to, subject, text) {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/resend-send`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentSession.access_token}` // Authenticate the request
+        'Authorization': `Bearer ${currentSession.access_token}`
       },
       body: JSON.stringify({ from: myEmail, to, subject: subject || '(no subject)', text })
     });
@@ -639,7 +633,7 @@
           subject: subject, body_text: body, folder: 'sent', is_read: true,
           received_at: new Date().toISOString()
         })
-      }, true);
+      });
       
       status.textContent = 'Sent!';
       showToast('Message sent');
@@ -667,7 +661,7 @@
           subject: `Re: ${currentEmail.subject}`, body_text: body, folder: 'sent', is_read: true,
           received_at: new Date().toISOString()
         })
-      }, true);
+      });
       
       document.getElementById('reply-text').value = '';
       document.getElementById('reply-area').classList.add('hidden');
