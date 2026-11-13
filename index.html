@@ -111,7 +111,6 @@
     .meta-email { font-size: 13px; color: #888; }
     .meta-date { font-size: 12px; color: #555; margin-top: 4px; }
     
-    /* The Box */
     .email-iframe-container {
       margin: 0 32px 32px 32px; background: #ffffff; border-radius: 12px;
       overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -393,11 +392,14 @@
     const bodyEl = document.getElementById('detail-body-content');
     
     // RENDER LOGIC: If it's HTML, render it. If it's text, style it nicely.
-    if (email.body_html && email.body_html.includes('<')) {
+    if (email.body_html && email.body_html.trim().length > 0 && email.body_html.includes('<')) {
+      // It's HTML, inject it
       bodyEl.innerHTML = email.body_html;
-    } else if (email.body_text) {
-      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:monospace; font-size:13px; color:#333;">${escapeHtml(email.body_text)}</div>`;
+    } else if (email.body_text && email.body_text.trim().length > 0) {
+      // It's plain text, style it like a normal email
+      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:-apple-system, sans-serif; font-size:14px; color:#333; line-height:1.6;">${escapeHtml(email.body_text)}</div>`;
     } else {
+      // No content at all
       bodyEl.innerHTML = `<div style="color:#888; text-align:center; padding:40px;">No content available</div>`;
     }
     
