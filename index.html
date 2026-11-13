@@ -4,111 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MailBox · lies.lat</title>
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
-    /* ── reset & base ── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%; overflow: hidden; background: #000000; color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 14px; -webkit-font-smoothing: antialiased;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    html, body { height: 100%; overflow: hidden; background: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
     ::-webkit-scrollbar-track { background: transparent; }
-
-    /* ── auth screen (Exact Replica) ── */
-    .auth-screen { 
-      height: 100vh; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      background: #000000; 
-    }
-    
-    .auth-box {
-      width: 440px; 
-      background: #0a0a0a; 
-      border: 1px solid #1a1a1a; 
-      border-radius: 12px;
-      padding: 48px; 
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center;
-      animation: fadeIn 0.4s ease-out;
-    }
-    
-    .auth-icon { 
-      width: 64px; 
-      height: 64px; 
-      background: #ffffff; 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      margin-bottom: 24px; 
-      transition: transform 0.3s ease;
-    }
+    .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000000; }
+    .auth-box { width: 440px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 48px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
+    .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; transition: transform 0.3s ease; }
     .auth-icon:hover { transform: scale(1.05); }
     .auth-icon svg { width: 32px; height: 32px; color: #000; }
-    
     .auth-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
     .auth-subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
-    
     .auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; font-weight: 600; color: #eee; }
-    .input-group input {
-      width: 100%; 
-      background: #000; 
-      border: 1px solid #333; 
-      color: #fff;
-      padding: 14px 16px; 
-      border-radius: 8px; 
-      font-size: 14px; 
-      outline: none; 
-      transition: all 0.2s ease;
-    }
-    .input-group input:focus { 
-      border-color: #666; 
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
-    }
-    
-    .btn-full {
-      width: 100%; 
-      background: #1c1c1c; 
-      color: #888; 
-      border: none; 
-      padding: 16px;
-      border-radius: 8px; 
-      font-size: 15px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      transition: all 0.2s ease;
-      margin-top: 4px;
-    }
-    .btn-full:hover { 
-      background: #2a2a2a; 
-      color: #fff; 
-      transform: translateY(-1px);
-    }
+    .input-group input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 14px 16px; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.2s ease; }
+    .input-group input:focus { border-color: #666; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+    .btn-full { width: 100%; background: #1c1c1c; color: #888; border: none; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-top: 4px; }
+    .btn-full:hover { background: #2a2a2a; color: #fff; transform: translateY(-1px); }
     .btn-full:active { transform: translateY(0); }
-    
     .auth-footer { margin-top: 32px; font-size: 13px; color: #666; text-align: center; }
     .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; }
     .auth-footer a:hover { text-decoration: underline; }
     
-    /* ── app shell ── */
     #app { display: none; height: 100vh; flex-direction: row; background: #000; }
     .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin-bottom: 32px; padding: 0 8px; }
@@ -187,7 +110,6 @@
     <div class="auth-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
     </div>
-    
     <div class="auth-title" id="auth-title">Welcome Back</div>
     <div class="auth-subtitle" id="auth-subtitle">Sign in to your email account</div>
     
@@ -201,7 +123,6 @@
         <input type="password" id="login-password">
       </div>
       <button class="btn-full" onclick="doLogin()">Sign in</button>
-      
       <div class="auth-footer">
         Secure IMAP Email Client
         <br><br>
@@ -231,12 +152,10 @@
         <a href="#" onclick="toggleAuth('login')">Sign in</a>
       </div>
     </div>
-    
     <div id="auth-err" style="color:#ef4444; font-size:13px; margin-top:16px; text-align:center; min-height:16px;"></div>
   </div>
 </div>
 
-<!-- ── MAIN APP ── -->
 <div id="app">
   <div class="sidebar">
     <div class="brand">
@@ -287,7 +206,6 @@
         <div class="detail-title" id="detail-subject">Subject</div>
         <div class="detail-actions">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="document.getElementById('reply-area').classList.remove('hidden')"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
         </div>
       </div>
       <div class="detail-body">
@@ -379,7 +297,6 @@
 
   async function doLogin() {
     let username = document.getElementById('login-email').value.trim();
-    
     if (!username.includes('@')) username = `${username}@lies.lat`;
     else if (!username.endsWith('@lies.lat')) username = username.split('@')[0] + '@lies.lat';
     
@@ -390,7 +307,6 @@
     try {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email: username, password });
       if (error) throw error;
-      
       currentUser = data.user;
       myEmail = username;
       initApp();
@@ -411,11 +327,7 @@
     if (password !== password2) { errEl.textContent = 'Passwords do not match'; return; }
     
     try {
-      // The database trigger we set up now handles creating the inbox automatically!
-      const { data: authData, error: authError } = await supabaseClient.auth.signUp({ 
-        email: email, 
-        password: password 
-      });
+      const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email: email, password: password });
       if (authError) throw authError;
 
       if (authData.session) {
@@ -459,7 +371,6 @@
       
       const { data, error } = await query;
       if (error) throw error;
-
       emails = data || [];
       renderEmailList();
       
@@ -477,25 +388,18 @@
   function renderEmailList() {
     const container = document.getElementById('email-list');
     const search = document.getElementById('search-input')?.value.toLowerCase() || '';
-    
     let filtered = emails;
     if (search) {
-      filtered = emails.filter(e => 
-        (e.subject || '').toLowerCase().includes(search) || 
-        (e.from_address || '').toLowerCase().includes(search)
-      );
+      filtered = emails.filter(e => (e.subject || '').toLowerCase().includes(search) || (e.from_address || '').toLowerCase().includes(search));
     }
-    
     if (filtered.length === 0) {
       container.innerHTML = '<div style="padding:40px; text-align:center; color:#555;">No messages found</div>';
       return;
     }
-    
     container.innerHTML = filtered.map(email => {
       const isUnread = !email.is_read;
       const isActive = selectedEmailId === email.id;
       const initial = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
-      
       return `
         <div class="email-item ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''}" onclick="viewEmail('${email.id}')">
           <div class="avatar-md">${initial}</div>
@@ -514,20 +418,16 @@
   async function viewEmail(id, skipMarkRead = false) {
     const email = emails.find(e => e.id === id);
     if (!email) return;
-    
     selectedEmailId = id;
     renderEmailList();
-    
     document.getElementById('detail-empty').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
-    
     document.getElementById('detail-subject').textContent = email.subject || '(No subject)';
     document.getElementById('detail-from-name').textContent = email.from_name || email.from_address || 'Unknown';
     document.getElementById('detail-from-email').textContent = `<${email.from_address}>`;
     document.getElementById('detail-to-email').textContent = email.to_address || myEmail;
     document.getElementById('detail-date').textContent = formatDateTime(email.received_at);
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
-    
     const bodyEl = document.getElementById('detail-body-content');
     if (email.body_html) bodyEl.innerHTML = email.body_html;
     else bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(email.body_text || '')}</div>`;
@@ -553,9 +453,7 @@
     currentFolder = folder;
     document.getElementById('folder-title').textContent = folder.charAt(0).toUpperCase() + folder.slice(1);
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-    const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => 
-      btn.textContent.trim().toLowerCase().includes(folder)
-    );
+    const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => btn.textContent.trim().toLowerCase().includes(folder));
     if (clickedBtn) clickedBtn.classList.add('active');
     clearDetail();
     loadEmails();
