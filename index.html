@@ -27,10 +27,6 @@
       from { opacity: 0; transform: translateX(20px); }
       to { opacity: 1; transform: translateX(0); }
     }
-    @keyframes toastPop {
-      0% { opacity: 0; transform: translateY(20px) scale(0.9); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
 
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -157,8 +153,6 @@
       padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100%; overflow-y: auto; line-height: 1.6; word-wrap: break-word;
     }
-    .email-html-render img { max-width: 100%; height: auto; border-radius: 4px; }
-    .email-html-render a { color: #0066cc; text-decoration: underline; }
     
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
 
@@ -533,6 +527,7 @@
     document.getElementById('detail-date').textContent = formatDateTime(email.received_at);
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
+    // RENDER CONTENT FIX
     const bodyEl = document.getElementById('detail-body-content');
     if (email.body_html) {
       bodyEl.innerHTML = email.body_html;
