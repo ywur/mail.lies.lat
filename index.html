@@ -6,60 +6,120 @@
   <title>MailBox · lies.lat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* ── reset & base ── */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; background: #000000; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    html, body {
+      height: 100%; overflow: hidden; background: #000000; color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px; -webkit-font-smoothing: antialiased;
+    }
+    
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastPop {
+      0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; transition: background 0.2s; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
     ::-webkit-scrollbar-track { background: transparent; }
+
+    /* ── Auth Screen ── */
     .auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000000; }
-    .auth-box { width: 440px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 48px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease-out; }
+    .auth-box {
+      width: 440px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px;
+      padding: 48px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;
+      animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
     .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; transition: transform 0.3s ease; }
-    .auth-icon:hover { transform: scale(1.05); }
+    .auth-icon:hover { transform: scale(1.08) rotate(5deg); }
     .auth-icon svg { width: 32px; height: 32px; color: #000; }
     .auth-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
     .auth-subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
     .auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
     .input-group { display: flex; flex-direction: column; gap: 8px; }
     .input-group label { font-size: 13px; font-weight: 600; color: #eee; }
-    .input-group input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 14px 16px; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.2s ease; }
-    .input-group input:focus { border-color: #666; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
-    .btn-full { width: 100%; background: #1c1c1c; color: #888; border: none; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-top: 4px; }
-    .btn-full:hover { background: #2a2a2a; color: #fff; transform: translateY(-1px); }
+    .input-group input {
+      width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 14px 16px;
+      border-radius: 8px; font-size: 14px; outline: none; transition: all 0.2s ease;
+    }
+    .input-group input:focus { border-color: #666; box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
+    .btn-full {
+      width: 100%; background: #1c1c1c; color: #888; border: none; padding: 16px; border-radius: 8px;
+      font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-top: 4px;
+    }
+    .btn-full:hover { background: #2a2a2a; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .btn-full:active { transform: translateY(0); }
     .auth-footer { margin-top: 32px; font-size: 13px; color: #666; text-align: center; }
-    .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; }
-    .auth-footer a:hover { text-decoration: underline; }
-    
+    .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
+    .auth-footer a:hover { opacity: 0.7; text-decoration: underline; }
+
+    /* ── App Shell ── */
     #app { display: none; height: 100vh; flex-direction: row; background: #000; }
-    .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; }
+    
+    /* ── Sidebar ── */
+    .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; animation: slideInRight 0.3s ease-out; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin-bottom: 32px; padding: 0 8px; }
     .brand svg { width: 24px; height: 24px; }
-    .nav-btn { display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid transparent; color: #888; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.2s; margin-bottom: 4px; }
-    .nav-btn:hover { background: #111; color: #fff; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 12px; background: transparent; border: 1px solid transparent;
+      color: #888; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+      text-align: left; transition: all 0.2s ease; margin-bottom: 4px;
+    }
+    .nav-btn:hover { background: #111; color: #fff; transform: translateX(4px); }
     .nav-btn.active { background: #fff; color: #000; font-weight: 600; }
     .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
-    .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; }
+    .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; transition: background 0.2s; }
+    .user-profile:hover { background: #111; }
     .avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: #333; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
     .user-email { font-size: 12px; color: #888; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .btn-ghost { background: transparent; border: 1px solid #333; color: #ccc; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; width: 100%; }
+    .btn-ghost {
+      background: transparent; border: 1px solid #333; color: #ccc; padding: 12px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease; width: 100%;
+    }
     .btn-ghost:hover { background: #111; border-color: #555; color: #fff; }
     .btn-ghost svg { width: 16px; height: 16px; }
+
+    /* ── List Pane ── */
     .list-pane { width: 360px; border-right: 1px solid #222; display: flex; flex-direction: column; background: #000; flex-shrink: 0; }
     .list-header { padding: 20px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid transparent; }
     .search-wrap { flex: 1; position: relative; display: flex; align-items: center; }
     .search-wrap svg { position: absolute; left: 12px; width: 16px; height: 16px; color: #666; }
-    .search-wrap input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none; }
+    .search-wrap input {
+      width: 100%; background: #111; border: 1px solid #333; color: #fff;
+      padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none; transition: border-color 0.2s;
+    }
     .search-wrap input:focus { border-color: #555; }
-    .refresh-btn { background: none; border: none; color: #666; cursor: pointer; padding: 4px; }
-    .refresh-btn:hover { color: #fff; }
+    .refresh-btn { background: none; border: none; color: #666; cursor: pointer; padding: 4px; transition: transform 0.3s ease; }
+    .refresh-btn:hover { color: #fff; transform: rotate(180deg); }
     .list-title { padding: 12px 24px; font-size: 16px; font-weight: 700; border-bottom: 1px solid #222; }
+    
     .email-list { flex: 1; overflow-y: auto; }
-    .email-item { display: flex; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #111; cursor: pointer; transition: background 0.2s; }
+    .email-item {
+      display: flex; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #111;
+      cursor: pointer; transition: all 0.2s ease; animation: fadeUp 0.3s ease-out;
+    }
     .email-item:hover { background: #0a0a0a; }
     .email-item.active { background: #1a1a1a; border-left: 3px solid #fff; padding-left: 21px; }
-    .avatar-md { width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
+    .avatar-md {
+      width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888;
+      display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; transition: all 0.2s;
+    }
     .email-item.active .avatar-md { background: #fff; color: #000; }
     .email-content { flex: 1; min-width: 0; }
     .email-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
@@ -68,24 +128,49 @@
     .email-subj { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .email-item.unread .email-sender { color: #fff; }
     .email-item.unread .email-subj { color: #fff; font-weight: 500; }
+
+    /* ── Detail Pane ── */
     .detail-pane { flex: 1; display: flex; flex-direction: column; background: #000; min-width: 0; }
-    .detail-header { padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .detail-header {
+      padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+      animation: fadeUp 0.3s ease-out;
+    }
     .detail-title { font-size: 18px; font-weight: 700; }
     .detail-actions { display: flex; gap: 12px; color: #666; }
-    .detail-actions svg { width: 20px; height: 20px; cursor: pointer; transition: color 0.2s; }
-    .detail-actions svg:hover { color: #fff; }
-    .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .detail-actions svg { width: 20px; height: 20px; cursor: pointer; transition: all 0.2s ease; }
+    .detail-actions svg:hover { color: #fff; transform: scale(1.1); }
+    
+    .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; animation: fadeUp 0.4s ease-out; }
     .detail-meta { padding: 24px 32px; display: flex; gap: 16px; align-items: flex-start; }
     .detail-meta .avatar-md { width: 48px; height: 48px; font-size: 18px; }
     .meta-info { display: flex; flex-direction: column; gap: 4px; }
     .meta-name { font-size: 16px; font-weight: 600; color: #fff; }
     .meta-email { font-size: 13px; color: #888; }
     .meta-date { font-size: 12px; color: #555; margin-top: 4px; }
-    .email-iframe-container { margin: 0 32px 32px 32px; background: #fff; border-radius: 12px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
-    .email-html-render { padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100%; overflow-y: auto; }
+    
+    /* The Box */
+    .email-iframe-container {
+      margin: 0 32px 32px 32px; background: #fff; border-radius: 12px; overflow: hidden;
+      flex: 1; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .email-html-render {
+      padding: 40px; color: #333; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100%; overflow-y: auto; line-height: 1.6; word-wrap: break-word;
+    }
+    .email-html-render img { max-width: 100%; height: auto; border-radius: 4px; }
+    .email-html-render a { color: #0066cc; text-decoration: underline; }
+    
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .modal { background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+
+    /* ── Modals ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeUp 0.2s ease-out;
+    }
+    .modal {
+      background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
     .modal-head { padding: 20px 24px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
     .modal-head span { font-size: 16px; font-weight: 600; }
     .modal-field { padding: 16px 24px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 16px; }
@@ -94,12 +179,23 @@
     .modal-body { padding: 20px 24px; }
     .modal-body textarea { width: 100%; min-height: 200px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; resize: vertical; line-height: 1.6; }
     .modal-foot { padding: 16px 24px; border-top: 1px solid #222; display: flex; gap: 12px; align-items: center; }
-    .btn-solid { background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-    .btn-solid:hover { opacity: 0.8; }
-    .btn-text { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+    .btn-solid {
+      background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 6px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-solid:hover { opacity: 0.8; transform: translateY(-1px); }
+    .btn-text { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; transition: color 0.2s; }
     .btn-text:hover { color: #fff; }
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 200; pointer-events: none; }
-    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000;
+      padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      opacity: 0; transform: translateY(20px) scale(0.9); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 200; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+    
     .hidden { display: none !important; }
   </style>
 </head>
@@ -222,7 +318,7 @@
           <div class="email-html-render" id="detail-body-content"></div>
         </div>
       </div>
-      <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a;">
+      <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a; animation: fadeUp 0.2s ease-out;">
         <textarea id="reply-text" placeholder="Type your reply..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:8px; min-height:80px; outline:none; font-family:inherit; resize:vertical;"></textarea>
         <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:12px;">
           <button class="btn-text" onclick="document.getElementById('reply-area').classList.add('hidden')">Cancel</button>
@@ -393,7 +489,7 @@
       filtered = emails.filter(e => (e.subject || '').toLowerCase().includes(search) || (e.from_address || '').toLowerCase().includes(search));
     }
     if (filtered.length === 0) {
-      container.innerHTML = '<div style="padding:40px; text-align:center; color:#555;">No messages found</div>';
+      container.innerHTML = '<div style="padding:40px; text-align:center; color:#555; animation: fadeUp 0.3s ease-out;">No messages found</div>';
       return;
     }
     container.innerHTML = filtered.map(email => {
@@ -420,17 +516,31 @@
     if (!email) return;
     selectedEmailId = id;
     renderEmailList();
+    
     document.getElementById('detail-empty').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
+    
+    // Reset animation
+    const detailBody = document.querySelector('.detail-body');
+    detailBody.style.animation = 'none';
+    detailBody.offsetHeight; /* trigger reflow */
+    detailBody.style.animation = 'fadeUp 0.4s ease-out';
+
     document.getElementById('detail-subject').textContent = email.subject || '(No subject)';
     document.getElementById('detail-from-name').textContent = email.from_name || email.from_address || 'Unknown';
     document.getElementById('detail-from-email').textContent = `<${email.from_address}>`;
     document.getElementById('detail-to-email').textContent = email.to_address || myEmail;
     document.getElementById('detail-date').textContent = formatDateTime(email.received_at);
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
+    
     const bodyEl = document.getElementById('detail-body-content');
-    if (email.body_html) bodyEl.innerHTML = email.body_html;
-    else bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:inherit;">${escapeHtml(email.body_text || '')}</div>`;
+    if (email.body_html) {
+      bodyEl.innerHTML = email.body_html;
+    } else if (email.body_text) {
+      bodyEl.innerHTML = `<div style="white-space:pre-wrap;">${escapeHtml(email.body_text)}</div>`;
+    } else {
+      bodyEl.innerHTML = `<div style="color:#888; text-align:center; padding:40px;">No content available</div>`;
+    }
     
     if (!skipMarkRead && !email.is_read) {
       email.is_read = true;
