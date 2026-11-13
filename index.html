@@ -15,7 +15,6 @@
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
@@ -28,10 +27,9 @@
       padding: 48px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center;
       animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; transition: transform 0.3s ease; }
-    .auth-icon:hover { transform: scale(1.08) rotate(5deg); }
+    .auth-icon { width: 64px; height: 64px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
     .auth-icon svg { width: 32px; height: 32px; color: #000; }
-    .auth-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .auth-title { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
     .auth-subtitle { font-size: 14px; color: #888; margin-bottom: 32px; }
     .auth-form { width: 100%; display: flex; flex-direction: column; gap: 20px; }
     .input-group { display: flex; flex-direction: column; gap: 8px; }
@@ -45,15 +43,14 @@
       width: 100%; background: #1c1c1c; color: #888; border: none; padding: 16px; border-radius: 8px;
       font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; margin-top: 4px;
     }
-    .btn-full:hover { background: #2a2a2a; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-    .btn-full:active { transform: translateY(0); }
+    .btn-full:hover { background: #2a2a2a; color: #fff; }
     .auth-footer { margin-top: 32px; font-size: 13px; color: #666; text-align: center; }
-    .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
-    .auth-footer a:hover { opacity: 0.7; text-decoration: underline; }
+    .auth-footer a { color: #fff; text-decoration: none; font-weight: 500; }
+    .auth-footer a:hover { text-decoration: underline; }
 
     #app { display: none; height: 100vh; flex-direction: row; background: #000; }
     
-    .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; animation: slideInRight 0.3s ease-out; }
+    .sidebar { width: 240px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 16px; flex-shrink: 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin-bottom: 32px; padding: 0 8px; }
     .brand svg { width: 24px; height: 24px; }
     .nav-btn {
@@ -61,45 +58,36 @@
       color: #888; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
       text-align: left; transition: all 0.2s ease; margin-bottom: 4px;
     }
-    .nav-btn:hover { background: #111; color: #fff; transform: translateX(4px); }
+    .nav-btn:hover { background: #111; color: #fff; }
     .nav-btn.active { background: #fff; color: #000; font-weight: 600; }
     .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
-    .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; transition: background 0.2s; }
-    .user-profile:hover { background: #111; }
+    .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; }
     .avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: #333; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
     .user-email { font-size: 12px; color: #888; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .btn-ghost {
       background: transparent; border: 1px solid #333; color: #ccc; padding: 12px 16px; border-radius: 8px;
-      font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;
-      transition: all 0.2s ease; width: 100%;
+      font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; width: 100%;
     }
     .btn-ghost:hover { background: #111; border-color: #555; color: #fff; }
     .btn-ghost svg { width: 16px; height: 16px; }
 
     .list-pane { width: 360px; border-right: 1px solid #222; display: flex; flex-direction: column; background: #000; flex-shrink: 0; }
-    .list-header { padding: 20px 24px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid transparent; }
+    .list-header { padding: 20px 24px; display: flex; align-items: center; gap: 12px; }
     .search-wrap { flex: 1; position: relative; display: flex; align-items: center; }
     .search-wrap svg { position: absolute; left: 12px; width: 16px; height: 16px; color: #666; }
-    .search-wrap input {
-      width: 100%; background: #111; border: 1px solid #333; color: #fff;
-      padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none; transition: border-color 0.2s;
-    }
-    .search-wrap input:focus { border-color: #555; }
-    .refresh-btn { background: none; border: none; color: #666; cursor: pointer; padding: 4px; transition: transform 0.3s ease; }
-    .refresh-btn:hover { color: #fff; transform: rotate(180deg); }
+    .search-wrap input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px 12px 10px 36px; border-radius: 8px; font-size: 13px; outline: none; }
+    .refresh-btn { background: none; border: none; color: #666; cursor: pointer; padding: 4px; }
+    .refresh-btn:hover { color: #fff; }
     .list-title { padding: 12px 24px; font-size: 16px; font-weight: 700; border-bottom: 1px solid #222; }
     
     .email-list { flex: 1; overflow-y: auto; }
     .email-item {
       display: flex; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #111;
-      cursor: pointer; transition: all 0.2s ease; animation: fadeUp 0.3s ease-out;
+      cursor: pointer; transition: background 0.2s; animation: fadeUp 0.3s ease-out;
     }
     .email-item:hover { background: #0a0a0a; }
     .email-item.active { background: #1a1a1a; border-left: 3px solid #fff; padding-left: 21px; }
-    .avatar-md {
-      width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; transition: all 0.2s;
-    }
+    .avatar-md { width: 40px; height: 40px; border-radius: 50%; background: #222; color: #888; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; flex-shrink: 0; }
     .email-item.active .avatar-md { background: #fff; color: #000; }
     .email-content { flex: 1; min-width: 0; }
     .email-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
@@ -110,16 +98,12 @@
     .email-item.unread .email-subj { color: #fff; font-weight: 500; }
 
     .detail-pane { flex: 1; display: flex; flex-direction: column; background: #000; min-width: 0; }
-    .detail-header {
-      padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
-      animation: fadeUp 0.3s ease-out;
-    }
+    .detail-header { padding: 20px 32px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .detail-title { font-size: 18px; font-weight: 700; }
-    .detail-actions { display: flex; gap: 12px; color: #666; }
-    .detail-actions svg { width: 20px; height: 20px; cursor: pointer; transition: all 0.2s ease; }
-    .detail-actions svg:hover { color: #fff; transform: scale(1.1); }
+    .detail-actions svg { width: 20px; height: 20px; cursor: pointer; color: #666; transition: color 0.2s; }
+    .detail-actions svg:hover { color: #fff; }
     
-    .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; animation: fadeUp 0.4s ease-out; }
+    .detail-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
     .detail-meta { padding: 24px 32px; display: flex; gap: 16px; align-items: flex-start; border-bottom: 1px solid #222; margin-bottom: 24px; }
     .detail-meta .avatar-md { width: 48px; height: 48px; font-size: 18px; }
     .meta-info { display: flex; flex-direction: column; gap: 4px; }
@@ -127,6 +111,7 @@
     .meta-email { font-size: 13px; color: #888; }
     .meta-date { font-size: 12px; color: #555; margin-top: 4px; }
     
+    /* The Box */
     .email-iframe-container {
       margin: 0 32px 32px 32px; background: #ffffff; border-radius: 12px;
       overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -139,14 +124,9 @@
     
     .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; color: #444; font-size: 15px; font-weight: 500; letter-spacing: 1px; }
 
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeUp 0.2s ease-out;
-    }
-    .modal {
-      background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+    /* Modals & Toast */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .modal { background: #111; border: 1px solid #333; border-radius: 12px; width: 600px; max-width: 95vw; box-shadow: 0 24px 64px rgba(0,0,0,0.8); display: flex; flex-direction: column; animation: scaleIn 0.3s ease-out; }
     .modal-head { padding: 20px 24px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
     .modal-head span { font-size: 16px; font-weight: 600; }
     .modal-field { padding: 16px 24px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 16px; }
@@ -155,22 +135,10 @@
     .modal-body { padding: 20px 24px; }
     .modal-body textarea { width: 100%; min-height: 200px; background: transparent; border: none; color: #fff; font-size: 14px; outline: none; resize: vertical; line-height: 1.6; }
     .modal-foot { padding: 16px 24px; border-top: 1px solid #222; display: flex; gap: 12px; align-items: center; }
-    .btn-solid {
-      background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 6px;
-      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-    }
-    .btn-solid:hover { opacity: 0.8; transform: translateY(-1px); }
-    .btn-text { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; transition: color 0.2s; }
-    .btn-text:hover { color: #fff; }
-
-    .toast {
-      position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000;
-      padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
-      opacity: 0; transform: translateY(20px) scale(0.9); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 200; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .toast.show { opacity: 1; transform: translateY(0) scale(1); }
-    
+    .btn-solid { background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-text { background: none; border: none; color: #888; font-size: 14px; cursor: pointer; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #fff; color: #000; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 200; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -178,50 +146,23 @@
 
 <div id="auth-screen" class="auth-screen">
   <div class="auth-box">
-    <div class="auth-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-    </div>
+    <div class="auth-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
     <div class="auth-title" id="auth-title">Welcome Back</div>
     <div class="auth-subtitle" id="auth-subtitle">Sign in to your email account</div>
     
     <div class="auth-form" id="login-form">
-      <div class="input-group">
-        <label>Email</label>
-        <input type="text" id="login-email" placeholder="you@example.com">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="login-password">
-      </div>
+      <div class="input-group"><label>Email</label><input type="text" id="login-email" placeholder="you@example.com"></div>
+      <div class="input-group"><label>Password</label><input type="password" id="login-password"></div>
       <button class="btn-full" onclick="doLogin()">Sign in</button>
-      <div class="auth-footer">
-        Secure IMAP Email Client
-        <br><br>
-        <span style="opacity: 0.6;">Don't have an account?</span> 
-        <a href="#" onclick="toggleAuth('register')">Sign up</a>
-      </div>
+      <div class="auth-footer">Secure IMAP Email Client<br><br><span style="opacity: 0.6;">Don't have an account?</span> <a href="#" onclick="toggleAuth('register')">Sign up</a></div>
     </div>
 
     <div class="auth-form hidden" id="register-form">
-      <div class="input-group">
-        <label>Username</label>
-        <input type="text" id="reg-username" placeholder="username">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="reg-password">
-      </div>
-      <div class="input-group">
-        <label>Confirm Password</label>
-        <input type="password" id="reg-password2">
-      </div>
+      <div class="input-group"><label>Username</label><input type="text" id="reg-username" placeholder="username"></div>
+      <div class="input-group"><label>Password</label><input type="password" id="reg-password"></div>
+      <div class="input-group"><label>Confirm Password</label><input type="password" id="reg-password2"></div>
       <button class="btn-full" onclick="doRegister()">Create Account</button>
-      <div class="auth-footer">
-        Secure IMAP Email Client
-        <br><br>
-        <span style="opacity: 0.6;">Already have an account?</span> 
-        <a href="#" onclick="toggleAuth('login')">Sign in</a>
-      </div>
+      <div class="auth-footer">Secure IMAP Email Client<br><br><span style="opacity: 0.6;">Already have an account?</span> <a href="#" onclick="toggleAuth('login')">Sign in</a></div>
     </div>
     <div id="auth-err" style="color:#ef4444; font-size:13px; margin-top:16px; text-align:center; min-height:16px;"></div>
   </div>
@@ -293,7 +234,7 @@
           <div class="email-html-render" id="detail-body-content"></div>
         </div>
       </div>
-      <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a; animation: fadeUp 0.2s ease-out;">
+      <div id="reply-area" class="hidden" style="padding: 16px 32px; border-top: 1px solid #222; background:#0a0a0a;">
         <textarea id="reply-text" placeholder="Type your reply..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:8px; min-height:80px; outline:none; font-family:inherit; resize:vertical;"></textarea>
         <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:12px;">
           <button class="btn-text" onclick="document.getElementById('reply-area').classList.add('hidden')">Cancel</button>
@@ -310,17 +251,9 @@
       <span>New Message</span>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer" onclick="closeCompose()"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </div>
-    <div class="modal-field">
-      <label>To</label>
-      <input type="text" id="compose-to" placeholder="recipient@example.com">
-    </div>
-    <div class="modal-field">
-      <label>Subject</label>
-      <input type="text" id="compose-subject" placeholder="Subject">
-    </div>
-    <div class="modal-body">
-      <textarea id="compose-body" placeholder="Write your message..."></textarea>
-    </div>
+    <div class="modal-field"><label>To</label><input type="text" id="compose-to" placeholder="recipient@example.com"></div>
+    <div class="modal-field"><label>Subject</label><input type="text" id="compose-subject" placeholder="Subject"></div>
+    <div class="modal-body"><textarea id="compose-body" placeholder="Write your message..."></textarea></div>
     <div class="modal-foot">
       <button class="btn-solid" onclick="sendCompose()">Send</button>
       <button class="btn-text" onclick="closeCompose()">Cancel</button>
@@ -334,22 +267,11 @@
 <script>
   const SUPABASE_URL = 'https://koqpmrebjsfpemmajbvk.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PRtMo_ntCby73M7wz0Zdpw_pKfo22Eu';
-  
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let currentUser = null;
-  let emails = [];
-  let currentFolder = 'inbox';
-  let refreshTimer = null;
-  let myEmail = '';
-  let selectedEmailId = null;
+  let currentUser = null, emails = [], currentFolder = 'inbox', refreshTimer = null, myEmail = '', selectedEmailId = null;
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
+  function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 
   function toggleAuth(type) {
     document.getElementById('auth-err').textContent = '';
@@ -370,20 +292,14 @@
     let username = document.getElementById('login-email').value.trim();
     if (!username.includes('@')) username = `${username}@lies.lat`;
     else if (!username.endsWith('@lies.lat')) username = username.split('@')[0] + '@lies.lat';
-    
     const password = document.getElementById('login-password').value;
     const errEl = document.getElementById('auth-err');
     if (!username || !password) { errEl.textContent = 'Please fill all fields'; return; }
-    
     try {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email: username, password });
       if (error) throw error;
-      currentUser = data.user;
-      myEmail = username;
-      initApp();
-    } catch (err) {
-      errEl.textContent = err.message;
-    }
+      currentUser = data.user; myEmail = username; initApp();
+    } catch (err) { errEl.textContent = err.message; }
   }
 
   async function doRegister() {
@@ -392,31 +308,19 @@
     const password2 = document.getElementById('reg-password2').value;
     const email = `${rawUser}@lies.lat`;
     const errEl = document.getElementById('auth-err');
-    
     if (!rawUser || rawUser.length < 2) { errEl.textContent = 'Username too short'; return; }
     if (password.length < 6) { errEl.textContent = 'Password must be 6+ chars'; return; }
     if (password !== password2) { errEl.textContent = 'Passwords do not match'; return; }
-    
     try {
       const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email: email, password: password });
       if (authError) throw authError;
-
-      if (authData.session) {
-        currentUser = authData.user;
-        myEmail = email;
-        initApp();
-      } else {
-        errEl.textContent = 'Account created! Please sign in.';
-        setTimeout(() => toggleAuth('login'), 2000);
-      }
-    } catch (err) {
-      errEl.textContent = err.message;
-    }
+      if (authData.session) { currentUser = authData.user; myEmail = email; initApp(); } 
+      else { errEl.textContent = 'Account created! Please sign in.'; setTimeout(() => toggleAuth('login'), 2000); }
+    } catch (err) { errEl.textContent = err.message; }
   }
 
   async function doLogout() {
-    await supabaseClient.auth.signOut();
-    currentUser = null; selectedEmailId = null;
+    await supabaseClient.auth.signOut(); currentUser = null; selectedEmailId = null;
     if (refreshTimer) clearInterval(refreshTimer);
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
@@ -439,19 +343,15 @@
       let query = supabaseClient.from('emails').select('*').order('received_at', { ascending: false });
       if (currentFolder === 'sent') query = query.eq('folder', 'sent');
       else if (currentFolder === 'inbox') query = query.eq('is_deleted', false);
-      
       const { data, error } = await query;
       if (error) throw error;
       emails = data || [];
       renderEmailList();
-      
       if (selectedEmailId) {
         const still = emails.find(e => e.id === selectedEmailId);
-        if (still) viewEmail(selectedEmailId, true);
-        else clearDetail();
+        if (still) viewEmail(selectedEmailId, true); else clearDetail();
       }
     } catch (err) {
-      console.error(err);
       document.getElementById('email-list').innerHTML = `<div style="padding:40px; text-align:center; color:#ef4444;">Error: ${err.message}</div>`;
     }
   }
@@ -460,46 +360,30 @@
     const container = document.getElementById('email-list');
     const search = document.getElementById('search-input')?.value.toLowerCase() || '';
     let filtered = emails;
-    if (search) {
-      filtered = emails.filter(e => (e.subject || '').toLowerCase().includes(search) || (e.from_address || '').toLowerCase().includes(search));
-    }
-    if (filtered.length === 0) {
-      container.innerHTML = '<div style="padding:40px; text-align:center; color:#555; animation: fadeUp 0.3s ease-out;">No messages found</div>';
-      return;
-    }
+    if (search) filtered = emails.filter(e => (e.subject || '').toLowerCase().includes(search) || (e.from_address || '').toLowerCase().includes(search));
+    if (filtered.length === 0) { container.innerHTML = '<div style="padding:40px; text-align:center; color:#555;">No messages found</div>'; return; }
     container.innerHTML = filtered.map(email => {
-      const isUnread = !email.is_read;
-      const isActive = selectedEmailId === email.id;
+      const isUnread = !email.is_read, isActive = selectedEmailId === email.id;
       const initial = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
       return `
         <div class="email-item ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''}" onclick="viewEmail('${email.id}')">
           <div class="avatar-md">${initial}</div>
           <div class="email-content">
-            <div class="email-top">
-              <span class="email-sender">${escapeHtml(email.from_name || email.from_address || 'Unknown')}</span>
-              <span class="email-date">${formatDate(email.received_at)}</span>
-            </div>
+            <div class="email-top"><span class="email-sender">${escapeHtml(email.from_name || email.from_address || 'Unknown')}</span><span class="email-date">${formatDate(email.received_at)}</span></div>
             <div class="email-subj">${escapeHtml(email.subject || '(No subject)')}</div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
   }
 
   async function viewEmail(id, skipMarkRead = false) {
     const email = emails.find(e => e.id === id);
     if (!email) return;
-    selectedEmailId = id;
-    renderEmailList();
+    selectedEmailId = id; renderEmailList();
     
     document.getElementById('detail-empty').classList.add('hidden');
     document.getElementById('detail-view').classList.remove('hidden');
     
-    const detailBody = document.querySelector('.detail-body');
-    detailBody.style.animation = 'none';
-    detailBody.offsetHeight; /* trigger reflow */
-    detailBody.style.animation = 'fadeUp 0.4s ease-out';
-
     document.getElementById('detail-subject').textContent = email.subject || '(No subject)';
     document.getElementById('detail-from-name').textContent = email.from_name || email.from_address || 'Unknown';
     document.getElementById('detail-from-email').textContent = `<${email.from_address}>`;
@@ -508,20 +392,19 @@
     document.getElementById('detail-avatar').textContent = (email.from_name || email.from_address || 'U').charAt(0).toUpperCase();
     
     const bodyEl = document.getElementById('detail-body-content');
-    if (email.body_html) {
+    
+    // RENDER LOGIC: If it's HTML (like Discord), render it. If it's text, style it nicely.
+    if (email.body_html && email.body_html.includes('<')) {
       bodyEl.innerHTML = email.body_html;
     } else if (email.body_text) {
-      bodyEl.innerHTML = `<div style="white-space:pre-wrap;">${escapeHtml(email.body_text)}</div>`;
+      bodyEl.innerHTML = `<div style="white-space:pre-wrap; font-family:monospace; font-size:13px; color:#333;">${escapeHtml(email.body_text)}</div>`;
     } else {
       bodyEl.innerHTML = `<div style="color:#888; text-align:center; padding:40px;">No content available</div>`;
     }
     
     if (!skipMarkRead && !email.is_read) {
       email.is_read = true;
-      try {
-        await supabaseClient.from('emails').update({ is_read: true }).eq('id', id);
-        renderEmailList();
-      } catch(e) {}
+      try { await supabaseClient.from('emails').update({ is_read: true }).eq('id', id); renderEmailList(); } catch(e) {}
     }
   }
 
@@ -539,8 +422,7 @@
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
     const clickedBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => btn.textContent.trim().toLowerCase().includes(folder));
     if (clickedBtn) clickedBtn.classList.add('active');
-    clearDetail();
-    loadEmails();
+    clearDetail(); loadEmails();
   }
 
   function openCompose() {
@@ -551,9 +433,7 @@
     document.getElementById('compose-status').textContent = '';
   }
 
-  function closeCompose() {
-    document.getElementById('compose-modal').classList.add('hidden');
-  }
+  function closeCompose() { document.getElementById('compose-modal').classList.add('hidden'); }
 
   async function sendViaEdge(to, subject, text) {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -573,10 +453,8 @@
     const subject = document.getElementById('compose-subject').value.trim();
     const body = document.getElementById('compose-body').value.trim();
     const status = document.getElementById('compose-status');
-    
     if (!to || !body) { status.textContent = 'Recipient and message required'; return; }
     status.textContent = 'Sending...';
-    
     try {
       await sendViaEdge(to, subject, body);
       await supabaseClient.from('emails').insert({
@@ -584,14 +462,10 @@
         subject: subject, body_text: body, folder: 'sent', is_read: true,
         received_at: new Date().toISOString()
       });
-      status.textContent = 'Sent!';
-      showToast('Message sent');
+      status.textContent = 'Sent!'; showToast('Message sent');
       setTimeout(closeCompose, 1000);
       if (currentFolder === 'sent') loadEmails();
-    } catch (err) {
-      status.textContent = 'Failed';
-      showToast('Send failed: ' + err.message);
-    }
+    } catch (err) { status.textContent = 'Failed'; showToast('Send failed: ' + err.message); }
   }
 
   async function sendReply() {
@@ -599,7 +473,6 @@
     if (!body) return;
     const currentEmail = emails.find(e => e.id === selectedEmailId);
     if (!currentEmail) return;
-    
     try {
       await sendViaEdge(currentEmail.from_address, `Re: ${currentEmail.subject}`, body);
       await supabaseClient.from('emails').insert({
@@ -611,33 +484,16 @@
       document.getElementById('reply-area').classList.add('hidden');
       showToast('Reply sent');
       if (currentFolder === 'sent') loadEmails();
-    } catch (err) {
-      showToast('Reply failed: ' + err.message);
-    }
+    } catch (err) { showToast('Reply failed: ' + err.message); }
   }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
-  }
-  function formatDate(ts) {
-    if (!ts) return '';
-    const d = new Date(ts), now = new Date();
-    if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
-  }
-  function formatDateTime(ts) {
-    if (!ts) return '';
-    return new Date(ts).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+  function formatDate(ts) { if (!ts) return ''; const d = new Date(ts), now = new Date(); if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); return d.toLocaleDateString([], { month: 'short', day: 'numeric' }); }
+  function formatDateTime(ts) { if (!ts) return ''; return new Date(ts).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
   async function restoreSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-      currentUser = session.user;
-      myEmail = session.user.email;
-      initApp();
-    }
+    if (session) { currentUser = session.user; myEmail = session.user.email; initApp(); }
   }
 
   restoreSession();
