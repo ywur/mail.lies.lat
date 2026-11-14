@@ -1055,14 +1055,14 @@ function renderEmailContent(email) {
   let html = email.body_html || ''; 
   const text = email.body_text || ''; 
   
-  // If there is no HTML but there is text, build a beautiful HTML wrapper for the embed
+  // If there is no HTML but there is text, wrap it nicely
   if (!html.trim() && text.trim()) {
     html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.6; color: #d9d9d9; white-space: pre-wrap;">${escapeHtml(text)}</div>`;
   }
 
-  // If there is genuinely no content at all, show a fallback HTML embed
+  // If it's genuinely empty, just show an empty container instead of a loud error message
   if (!html.trim()) {
-    html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #888; font-style: italic;">This email had no content.</div>`;
+    html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #888; font-style: italic;">(Empty message)</div>`;
   }
 
   const rawText = `${text || ''} ${stripHtml(html) || ''}`.trim(); 
