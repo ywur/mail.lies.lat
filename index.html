@@ -1052,42 +1052,39 @@ function createCodeExtract(code) { const wrap = document.createElement('div'); w
 
 function renderEmailContent(email) {
   const container = $('detail-body');
-  let html = email.body_html || ''; 
-  const text = email.body_text || ''; 
-  
-  // If there is no HTML but there is text, wrap it nicely
-  if (!html.trim() && text.trim()) {
-    html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.6; color: #d9d9d9; white-space: pre-wrap;">${escapeHtml(text)}</div>`;
-  }
-
-  // If it's genuinely empty, just show an empty container instead of a loud error message
-  if (!html.trim()) {
-    html = `<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #888; font-style: italic;">(Empty message)</div>`;
-  }
-
-  const rawText = `${text || ''} ${stripHtml(html) || ''}`.trim(); 
+  const html = email.body_html || email.html_body || email.content_html || '';
+  const text = email.body_text || email.text_body || email.content_text || '';
+  const rawText = `${text || ''} ${stripHtml(html) || ''}`.trim();
   const code = extractVerificationCode(rawText);
 
-  // ALWAYS render the iframe embed
-  const frame = document.createElement('iframe'); 
-  frame.className = 'email-html-frame'; 
-  frame.title = 'Email content'; 
-  frame.setAttribute('sandbox', 'allow-same-origin allow-popups allow-popups-to-escape-sandbox'); 
-  frame.referrerPolicy = 'no-referrer';
-  
-  const safeDocument = `<!doctype html>
-  <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    *{box-sizing:border-box}html,body{margin:0;padding:0;max-width:100%;overflow-wrap:anywhere}
-    body{padding:20px;font:14px/1.6 Arial,Helvetica,sans-serif;color:#d9d9d9;background:#0a0a0a}
-    img{max-width:100%;height:auto}table{max-width:100%}pre{white-space:pre-wrap;overflow-wrap:anywhere}
-    a{color:#8ab4ff;overflow-wrap:anywhere}iframe,video{max-width:100%}
-  </style></head><body>${html}</body></html>`;
-  
-  frame.srcdoc = safeDocument; 
-  const frag = document.createDocumentFragment(); 
-  if (code) frag.appendChild(createCodeExtract(code)); 
-  frag.appendChild(frame); 
+  if (typeof html === 'string' && html.trim()) {
+    const frame = document.createElement('iframe');
+    frame.className = 'email-html-frame';
+    frame.title = 'Email content';
+    frame.setAttribute('sandbox', 'allow-popups allow-popups-to-escape-sandbox');
+    frame.referrerPolicy = 'no-referrer';
+    const safeDocument = `<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}html,body{margin:0;padding:0;max-width:100%;overflow-wrap:anywhere}
+html,body{user-select:none;-webkit-user-select:none}
+body{padding:20px;font:14px/1.6 Arial,Helvetica,sans-serif;color:#d9d9d9;background:#0a0a0a}
+img{max-width:100%;height:auto}table{max-width:100%}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+a{color:#8ab4ff;overflow-wrap:anywhere}iframe,video{max-width:100%}
+</style></head><body>${html}</body></html>`;
+    frame.srcdoc = safeDocument;
+    const frag = document.createDocumentFragment();
+    if (code) frag.appendChild(createCodeExtract(code));
+    frag.appendChild(frame);
+    container.replaceChildren(frag);
+    return;
+  }
+  const content = document.createElement('div');
+  content.className = 'email-text-content';
+  content.textContent = text || stripHtml(html) || '(no content)';
+  const frag = document.createDocumentFragment();
+  if (code) frag.appendChild(createCodeExtract(code));
+  frag.appendChild(content);
   container.replaceChildren(frag);
 }
 
